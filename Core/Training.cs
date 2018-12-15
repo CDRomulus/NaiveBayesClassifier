@@ -187,7 +187,7 @@ namespace BayesianNetwork
             Console.WriteLine("Please enter the name of the desired training text file.");
 
             SetSourceDirectory();
-            string FileDirectory = srcDirectory + Console.ReadLine() + ".txt"; ;
+            string FileDirectory = srcDirectory + Console.ReadLine() + ".txt";
 
             if (File.Exists(FileDirectory))
             {

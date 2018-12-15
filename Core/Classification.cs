@@ -72,20 +72,23 @@ namespace BayesianNetwork
         //List of word probabilities of unknown document for each category
         private readonly List<double> PCatConDoc = new List<double>();
         private readonly List<double> PCatLaborDoc = new List<double>();
-        private readonly List<double> PCatConservativeConseravtiveCoalitionDoc = new List<double>();        
+        private readonly List<double> PCatConservativeConseravtiveCoalitionDoc = new List<double>();
+
 
         //Private Methods
         //Removing of unwanthed characters
 
         //Calculating final probability document belonging to category
+#pragma warning disable RECS0082 // Parameter has the same name as a member and hides it
         private double CalculatePCatDoc(CategoryTable tableConservative, double totalUniqueWords, double PCatParty, List<double> PCatPartyDoc)
+#pragma warning restore RECS0082 // Parameter has the same name as a member and hides it
         {
             double CatLogTotal=0;
             for (int i = 0; i < fileContents.Count; i++)
             {
                 PCatPartyDoc.Add(tableConservative.GetPWordCat(fileContents[i], totalUniqueWords));
             }
-            if (PCatPartyDoc.Count() > 0)
+            if (PCatPartyDoc.Any())
             {
                 PCatPartyDoc.Add(PCatParty);
             }
