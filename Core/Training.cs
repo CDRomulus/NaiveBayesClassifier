@@ -5,12 +5,30 @@ using System.IO;
 
 namespace BayesianNetwork
 {
-    internal class Parser
+    internal class ExeptionMethods
+    {
+        internal void ExeptionMethod(Exception e)
+        {
+            Console.WriteLine("\n" + e.Message);
+            Console.WriteLine("Please make sure the included master and/or originalTeachingData folders are present in /res.");
+            Console.WriteLine("Press any button to exit.");
+            Console.ReadKey();
+            Environment.Exit(0);
+        }
+    }
+    internal class Parser : ExeptionMethods
     {
         //Fields
         protected List<string> fileContents = new List<string>();//All unique words of a single document 
         protected List<string> stopWords = new List<string>();//List of Stop words
         protected int totalChanged = 0;//Count of total changed words  
+
+        internal void SetSourceDirectory()
+        {
+            DirectoryInfo parentDirectory = Directory.GetParent(Directory.GetCurrentDirectory());
+            srcDirectory = parentDirectory + "//" + "res" + "//";
+        }
+
         protected static void RemoveCharacters(StreamReader sr, List<string> str)
         {
             List<int> count = new List<int>();
@@ -20,7 +38,6 @@ namespace BayesianNetwork
             }
             for (int i = 0; i < str.Count; i++)
             {
-
                 str[i] = str[i].Replace("\r", String.Empty);
                 str[i] = str[i].Replace("\"", String.Empty);
                 str[i] = str[i].Replace(".", String.Empty);
@@ -48,8 +65,8 @@ namespace BayesianNetwork
         {
             try
             {
-                using (StreamReader sr = new StreamReader(FileDirectory))
-                {
+                StreamReader sr = new StreamReader(FileDirectory);
+                
                     string[] localFileContent;
                     localFileContent = sr.ReadToEnd().Split(' ', '\n', '\t');
                     fileContents = new List<string>(localFileContent);
@@ -61,21 +78,21 @@ namespace BayesianNetwork
                         Console.WriteLine("Empty Document");
                         fileContents[0].Remove(0, 1);
                     }
+
                     sr.Close();
-                }
-                using (StreamReader sr = new StreamReader(srcDirectory + stopWordDoc))
-                {
+
+                sr = new StreamReader(srcDirectory + stopWordDoc);
+
                     string[] localStopWords;
                     localStopWords = sr.ReadToEnd().Split(' ', '\n', '\t');
                     stopWords = new List<string>(localStopWords);
                     RemoveCharacters(sr, stopWords);
                     sr.Close();
-                }
-                using (StreamReader sr = new StreamReader(srcDirectory + lemmatizationDoc))
-                {
+
+                sr = new StreamReader(srcDirectory + lemmatizationDoc);
+                
                     string lemmatizationLine;
                     string[] lemmatizationLineArray;
-
 
                     while ((lemmatizationLine = sr.ReadLine()) != null)
                     {
@@ -95,15 +112,10 @@ namespace BayesianNetwork
                         }
                     }
                     sr.Close();
-
-                }
-
             }
             catch (Exception e)
             {
-                Console.WriteLine("\n" + e.Message);
-                Console.WriteLine("Press any button to exit.");
-                Console.ReadKey();
+                ExeptionMethod(e);
             }
             if (fileContents.Count == 0)
             {
@@ -115,13 +127,10 @@ namespace BayesianNetwork
             List<int> count = new List<int>();
             for (int i = 0; i < fileContents.Count; i++)
             {
-
                 for (int x = 0; x < stopWords.Count; x++)
                 {
-
                     if (stopWords[x] == fileContents[i])
                     {
-
                         count.Add(i);
 
                         totalRemoved++;
@@ -136,10 +145,9 @@ namespace BayesianNetwork
 
             Console.WriteLine("\nTotal Lemmatizations: " + totalChanged);
             Console.WriteLine("Total Words Ignored: " + totalRemoved);
-            Console.WriteLine("Total Words to be  Added to network: " + fileContents.Count);
+            Console.WriteLine("Total Words in Document: " + fileContents.Count);
 
-
-        }//Parse document
+        }//Parsing documents
     }
     internal class Training : Parser
     {
@@ -161,14 +169,12 @@ namespace BayesianNetwork
         //Instance for clearing data
         public Training()
         {
-            DirectoryInfo parentDirectory = Directory.GetParent(Directory.GetCurrentDirectory());
-            srcDirectory = parentDirectory + "//" + "res" + "//";
+            SetSourceDirectory();
         }
         //Use for resetting data to the default set
         public Training(string filename, string stopWordDoc, string lemmatizationDoc)
         {
-            DirectoryInfo parentDirectory = Directory.GetParent(Directory.GetCurrentDirectory());
-            srcDirectory = parentDirectory + "//" + "res" + "//";
+            SetSourceDirectory();
             string FileDirectory = srcDirectory + filename + ".txt";
 
             ParseTextDocument(FileDirectory, stopWordDoc, lemmatizationDoc);
@@ -180,13 +186,8 @@ namespace BayesianNetwork
             Console.Clear();
             Console.WriteLine("Please enter the name of the desired training text file.");
 
-
-
-            DirectoryInfo parentDirectory = Directory.GetParent(Directory.GetCurrentDirectory());
-            srcDirectory = parentDirectory + "//" + "res" + "//";
+            SetSourceDirectory();
             string FileDirectory = srcDirectory + Console.ReadLine() + ".txt"; ;
-
-
 
             if (File.Exists(FileDirectory))
             {
@@ -206,18 +207,15 @@ namespace BayesianNetwork
                     Environment.Exit(0);
                 }
             }
-
-
-
         }
         //Obtain unique words and its frequencies
         public void ObtainTeachingData(string catMasterDoc)
         {
             try
             {
-                using (StreamReader sr = new StreamReader(srcDirectory + catMasterDoc))
-                {
-                    if (sr.ReadLine() == null)
+                StreamReader sr = new StreamReader(srcDirectory + catMasterDoc);
+                
+                    if (sr.ReadToEnd() == null)
                     {
                         sr.Close();
                         
@@ -233,36 +231,35 @@ namespace BayesianNetwork
                                     count++;
                                 }
                             }
+
                             frequency.Add(count);                                               
                         }                        
 
                         StreamWriter sw = new StreamWriter(srcDirectory + catMasterDoc);
                         for (int i = 0; i < uniqueContents.Count; i++)
                         {
-                            sw.WriteLine(uniqueContents[i] + " " + frequency[i]);
-                           
-                        }
-                        sw.Close();
+                        sw.WriteLine(uniqueContents[i] + " " + frequency[i]);
 
+                        }
+
+                    sw.Close();
                     }
+
                     else
                     {
                         sr.Close();
-                        StreamReader sr1 = new StreamReader(srcDirectory + catMasterDoc);
+                        sr = new StreamReader(srcDirectory + catMasterDoc);
                         string line;
                         string[] lineArray;
 
-
-                        while ((line = sr1.ReadLine()) != null)
+                        while ((line = sr.ReadLine()) != null)
                         {
                             lineArray = line.Split(' ');
 
                             uniqueContents.Add(lineArray[0]);
                             frequency.Add(Int32.Parse(lineArray[1]));
-
                         }
-                        sr1.Close();
-
+                    sr.Close();
 
                         for (int i = 0; i < fileContents.Count; i++)
                         {
@@ -281,31 +278,23 @@ namespace BayesianNetwork
                                 uniqueContents.Add(fileContents[i]);
                                 frequency.Add(1);
                             }
-                        }                        
+                        }                       
 
                         System.IO.File.WriteAllText(srcDirectory + catMasterDoc, string.Empty);
-                        StreamWriter sr2 = new StreamWriter(srcDirectory + catMasterDoc);
+                        StreamWriter sw = new StreamWriter(srcDirectory + catMasterDoc);
 
                         for (int i = 0; i < uniqueContents.Count(); i++)
                         {
-                            sr2.WriteLine(uniqueContents[i] + " " + frequency[i]);
+                        sw.WriteLine(uniqueContents[i] + " " + frequency[i]);
                         }
-                        sr2.Close();
+                    sw.Close();
                     }
-
-
-                    
                     Console.WriteLine("\nDocument Learned!: "+ catMasterDoc);
-
-
-                }
             }
             catch (Exception e)
             {
-                Console.WriteLine("\n" + e.Message);
-                Console.WriteLine("Press any button to exit.");
-                Console.ReadKey();
-                Environment.Exit(0);
+                ExeptionMethod(e);
+                            
             }
         }
         //Use for resetting data to the default set
@@ -327,35 +316,25 @@ namespace BayesianNetwork
             }
             catch (Exception e)
             {
-                Console.WriteLine("\n"+e.Message);
-                Console.WriteLine("Press any button to exit.");
-                Console.ReadKey();
-                Environment.Exit(0);
+                ExeptionMethod(e);
             }
-
         }
         //Adding dictionary to a selected category master document
         public void SetMaster(int type, string master, string conservativeMaster, string laborMaster, string libDemConMaster)
         {
-
-
             string line;
             string[] lineArray;
             List<string> lineList = new List<string>();
 
-
             try
             {
-                using (StreamReader sr = new StreamReader(srcDirectory + master))
-                {
-
+                StreamReader sr = new StreamReader(srcDirectory + master);
+                
                     while ((line = sr.ReadLine()) != null)
                     {
                         lineArray = line.Split(' ');
                         lineList.Add(lineArray[0]);
                         lineList.Add(lineArray[1]);
-
-
                     }
                     sr.Close();
                     line = null;
@@ -367,13 +346,10 @@ namespace BayesianNetwork
                     StreamReader laborDoc = new StreamReader(srcDirectory + laborMaster);
                     StreamReader LibDemConCoalitionDoc = new StreamReader(srcDirectory + libDemConMaster);
 
-
-
                     while ((line = conservativeDoc.ReadLine()) != null)
                     {
                         lineArray = line.Split(' ');
                         allUniqueWords.Add(lineArray[0]);
-
 
                     }
                     while ((line = laborDoc.ReadLine()) != null)
@@ -381,13 +357,11 @@ namespace BayesianNetwork
                         lineArray = line.Split(' ');
                         allUniqueWords.Add(lineArray[0]);
 
-
                     }
                     while ((line = LibDemConCoalitionDoc.ReadLine()) != null)
                     {
                         lineArray = line.Split(' ');
                         allUniqueWords.Add(lineArray[0]);
-
 
                     }
                     allUniqueWords = allUniqueWords.Distinct().ToList();
@@ -395,10 +369,8 @@ namespace BayesianNetwork
                     laborDoc.Close();
                     LibDemConCoalitionDoc.Close();
 
-
                     switch (type)
                     {
-
                         case 0:
 
                             for (int i = 0; i < lineList.Count; i++)
@@ -476,30 +448,13 @@ namespace BayesianNetwork
                                 sw.WriteLine(line);
                             }
                             sw.Close();
-
                             break;
                     }
-
-
-
-
-
-
-
-                }
             }
             catch (Exception e)
             {
-                Console.WriteLine("\n" + e.Message);
-                Console.WriteLine("Press any button to exit.");
-                Console.ReadKey();
-                Environment.Exit(0);
+                ExeptionMethod(e);
             }
-
-
         }        
     }      
-    
-       
-    
 }

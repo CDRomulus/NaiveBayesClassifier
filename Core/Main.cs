@@ -1,8 +1,6 @@
 ﻿//Rommulluss Caraiman
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 namespace BayesianNetwork
 {
     static internal class Program
@@ -25,21 +23,17 @@ namespace BayesianNetwork
                     case 0:
                         break;
                     case 1:
-                        Training trainObj = new Training(stopWordDoc, lemmatizationDoc);                        
-
+                        Training trainObj = new Training(stopWordDoc, lemmatizationDoc);
 
                         if (trainObj.Success != true)
                         {
-                            
-                            Main();
-                           
+                            Main();                           
                         }
                         else
                         {
                             bool done=false;
                             do
                             {
-                                
                                 Console.WriteLine("\nSelect which party was in power for the speech.");
                                 Console.WriteLine("C = Conservatives\nL = Labor\nD = Liberal Democrats / Conservative Coalition");
                                 Console.WriteLine("\nOr press Esc to exit.");
@@ -72,12 +66,10 @@ namespace BayesianNetwork
                                 }
                             }
                             while (done == false);
-
                         }
                         break;
                     case 2:
                         Classification class1 = new Classification(conservativeMaster,LaborMaster,LibDemConMaster,Master,stopWordDoc,lemmatizationDoc);
-
 
                         Console.Clear();
                         
@@ -113,17 +105,11 @@ namespace BayesianNetwork
                         resetTraining.ObtainTeachingData(LaborMaster);
                         resetTraining.SetMaster(1, Master, conservativeMaster, LaborMaster, LibDemConMaster);
 
-
-
                         Console.WriteLine("Press any KEY to continue.");
 
                         Console.ReadKey();
                         break;
                 }
-               
-                
-
-
             }                       
         }
         //Displays Welcome Message
@@ -176,7 +162,6 @@ namespace BayesianNetwork
                             return 0;
                     }
 
-
                 case ConsoleKey.Escape:
                     //exit
                    
@@ -184,14 +169,10 @@ namespace BayesianNetwork
                     return 0;
                     
                 default:
-                    //restart
-
-                  
+                    //restart                 
                     
                     return 0;
             }
         }
-        
     }
-    
 }

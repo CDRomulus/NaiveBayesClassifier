@@ -5,7 +5,7 @@ using System.IO;
 
 namespace BayesianNetwork
 {
-    internal class CategoryTable
+    internal class CategoryTable : ExeptionMethods
     {
         //This class contains a document's word probabilities to a selected category
         //Which is used in classification class
@@ -28,16 +28,14 @@ namespace BayesianNetwork
                 }
             }
             return (Math.Log(((0 + 1) / (totalWordCount + totalUniqueWords))));
-
-
         }
 
         public CategoryTable(string fileLocation, double totalUniqueWords)
         {
             try
             {
-                using (StreamReader sr = new StreamReader(fileLocation))
-                {
+                StreamReader sr = new StreamReader(fileLocation);
+
                     string line;
                     string[] lineArray;
                     while ((line = sr.ReadLine()) != null)
@@ -46,27 +44,20 @@ namespace BayesianNetwork
                         word.Add(lineArray[0]);
                         totalWordCount += Convert.ToInt32(lineArray[1]);
                         FCatWord.Add(Convert.ToInt32(lineArray[1]));
-
                     }
-                }
+                sr.Close();  
 
                 for (int i = 0; i < word.Count; i++)
                 {
                     double temp = Math.Log(Convert.ToDouble(FCatWord[i] + 1) / (totalWordCount + totalUniqueWords));
 
                     LogPWordCat.Add(temp);
-
                 }
-
             }
             catch (Exception e)
             {
-                Console.WriteLine("\n" + e.Message);
-                Console.WriteLine("Press any button to exit.");
-                Console.ReadKey();
-                Environment.Exit(0);
+                ExeptionMethod(e);
             }
-
         }
     }
     internal class Classification : Parser
@@ -92,11 +83,7 @@ namespace BayesianNetwork
             double CatLogTotal=0;
             for (int i = 0; i < fileContents.Count; i++)
             {
-
                 PCatPartyDoc.Add(tableConservative.GetPWordCat(fileContents[i], totalUniqueWords));
-
-
-
             }
             if (PCatPartyDoc.Count() > 0)
             {
@@ -119,105 +106,109 @@ namespace BayesianNetwork
         
         //Public Methods
         public Classification(string conservativeDoc, string laborDoc, string libDemConDoc,string master,string stopWordDoc,string lemmatizationDoc)
-        {                                
-            DirectoryInfo parentDirectory = Directory.GetParent(Directory.GetCurrentDirectory());
-            srcDirectory = parentDirectory + "//" + "res" + "//";
-            Console.WriteLine("Please enter the name of the .txt document you wish to predict.");
-            Console.WriteLine("Name of included test documents: 'test1', 'test2', 'test3'");
-            string FileDirectory = srcDirectory + Console.ReadLine() + ".txt";
-            if (File.Exists(FileDirectory))
+        {
+            try
             {
-                ParseTextDocument(FileDirectory, stopWordDoc, lemmatizationDoc);
-
-                StreamReader sr = new StreamReader(srcDirectory + master);
-               double totalConservative = 0;
-               double totalLabour = 0;
-               double totalLibDemCon = 0;
-               double totalUniqueWords = 0;
-
-                string[] tempMaster = sr.ReadToEnd().Split(' ', '\n', '\t');
-                for (int i = 0; i < tempMaster.Length; i++)
+                SetSourceDirectory();
+                Console.WriteLine("Please enter the name of the .txt document you wish to predict.");
+                Console.WriteLine("Name of included test documents: 'test1', 'test2', 'test3'");
+                string FileDirectory = srcDirectory + Console.ReadLine() + ".txt";
+                if (File.Exists(FileDirectory))
                 {
-                    if (tempMaster[i] == "Conservative")
+                    ParseTextDocument(FileDirectory, stopWordDoc, lemmatizationDoc);
+
+                    StreamReader sr = new StreamReader(srcDirectory + master);
+                   
+                    double totalConservative = 0;
+                    double totalLabour = 0;
+                    double totalLibDemCon = 0;
+                    double totalUniqueWords = 0;
+
+                    string[] tempMaster = sr.ReadToEnd().Split(' ', '\n', '\t');
+                    for (int i = 0; i < tempMaster.Length; i++)
                     {
-                        totalConservative = double.Parse(tempMaster[i + 1]);
+                        if (tempMaster[i] == "Conservative")
+                        {
+                            totalConservative = double.Parse(tempMaster[i + 1]);
+                        }
+                        if (tempMaster[i] == "Labor")
+                        {
+                            totalLabour = double.Parse(tempMaster[i + 1]);
+                        }
+                        if (tempMaster[i] == "LibDemCon")
+                        {
+                            totalLibDemCon = double.Parse(tempMaster[i + 1]);
+                        }
+                        if (tempMaster[i] == "Count")
+                        {
+                            totalUniqueWords = int.Parse(tempMaster[i + 1]);
+                        }
+
+                        sr.Close();
                     }
-                    if (tempMaster[i] == "Labor")
+                    if (Math.Abs((totalConservative + totalLabour + totalLibDemCon)) < 1e-11)
                     {
-                        totalLabour = double.Parse(tempMaster[i + 1]);
+                        Console.WriteLine("\nNo words were found in the network");
+                        Console.ReadKey();
+                        return;
                     }
-                    if (tempMaster[i] == "LibDemCon")
+                    double PCatConservative = Math.Log((totalConservative / (totalConservative + totalLabour + totalLibDemCon)));
+
+                    double PCatLabor = Math.Log((totalLabour / (totalConservative + totalLabour + totalLibDemCon)));
+
+                    double PCatConservativeLibDemCoalition = Math.Log((totalLibDemCon / (totalConservative + totalLabour + totalLibDemCon)));
+
+                    tableConservative = new CategoryTable(srcDirectory + conservativeDoc, totalUniqueWords);
+                    tableLabor = new CategoryTable(srcDirectory + laborDoc, totalUniqueWords);
+                    tableLibDem = new CategoryTable(srcDirectory + libDemConDoc, totalUniqueWords);
+
+                    double consLogTotal = CalculatePCatDoc(tableConservative, totalUniqueWords, PCatConservative, PCatConDoc);
+                    double laborLogTotal = CalculatePCatDoc(tableLabor, totalUniqueWords, PCatLabor, PCatLaborDoc);
+                    double libDemConLogTotal = CalculatePCatDoc(tableLibDem, totalUniqueWords, PCatConservativeLibDemCoalition, PCatConservativeConseravtiveCoalitionDoc);
+
+                    if (consLogTotal > laborLogTotal && consLogTotal > libDemConLogTotal)
                     {
-                        totalLibDemCon = double.Parse(tempMaster[i + 1]);
+                        Console.WriteLine("\nMost Likely: Conservative");
                     }
-                    if (tempMaster[i] == "Count")
+                    else if (laborLogTotal > consLogTotal && laborLogTotal > libDemConLogTotal)
                     {
-                        totalUniqueWords = int.Parse(tempMaster[i + 1]);
+                        Console.WriteLine("\nMost Likely: Labor");
+                    }
+                    else if (libDemConLogTotal > consLogTotal && libDemConLogTotal > laborLogTotal)
+                    {
+                        Console.WriteLine("\nMost Likely: Liberal Democrats / Conservative Coalition");
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nCannot Determine Party!");
                     }
 
-                    sr.Close();
-                }
-                if((totalConservative + totalLabour + totalLibDemCon)==0)
-                {
-                    Console.WriteLine("\nThere is no set data!");
+                    Console.WriteLine("\nConservative                              LogE(Probability) = " + consLogTotal);
+                    Console.WriteLine("Labor                                     LogE(Probability) = " + laborLogTotal);
+                    Console.WriteLine("Conservative/Liberal Democrats Coalition  LogE(Probability) = " + libDemConLogTotal);
+                    Console.WriteLine("\nNB: The unknown document is classified to the most posative LogE(Probability) category.");
+                    Console.WriteLine("\nPress any KEY to continue.");
+
                     Console.ReadKey();
-                    return;
-                }
-                double PCatConservative = Math.Log((totalConservative / (totalConservative + totalLabour + totalLibDemCon)));
-
-                double PCatLabor = Math.Log((totalLabour / (totalConservative + totalLabour + totalLibDemCon)));
-
-                double PCatConservativeLibDemCoalition = Math.Log((totalLibDemCon / (totalConservative + totalLabour + totalLibDemCon)));
-
-
-                tableConservative = new CategoryTable(srcDirectory + conservativeDoc, totalUniqueWords);
-                tableLabor = new CategoryTable(srcDirectory + laborDoc, totalUniqueWords);
-                tableLibDem = new CategoryTable(srcDirectory + libDemConDoc, totalUniqueWords);
-
-                double consLogTotal = CalculatePCatDoc(tableConservative, totalUniqueWords, PCatConservative, PCatConDoc);
-                double laborLogTotal = CalculatePCatDoc(tableLabor, totalUniqueWords, PCatLabor, PCatLaborDoc);
-                double libDemConLogTotal = CalculatePCatDoc(tableLibDem, totalUniqueWords, PCatConservativeLibDemCoalition, PCatConservativeConseravtiveCoalitionDoc);
-
-
-                if (consLogTotal > laborLogTotal && consLogTotal > libDemConLogTotal)
-                {
-                    Console.WriteLine("\nMost Likely: Conservative");
-                }
-                else if (laborLogTotal > consLogTotal && laborLogTotal > libDemConLogTotal)
-                {
-                    Console.WriteLine("\nMost Likely: Labor");
-                }
-                else if (libDemConLogTotal > consLogTotal && libDemConLogTotal > laborLogTotal)
-                {
-                    Console.WriteLine("\nMost Likely: Liberal Democrats / Conservative Coalition");
                 }
                 else
                 {
-                    Console.WriteLine("\nCannot Determine Party!");
-                }
-                
-                Console.WriteLine("\nConservative                              LogE(Probability) = " + consLogTotal);
-                Console.WriteLine("Labor                                     LogE(Probability) = " + laborLogTotal);
-                Console.WriteLine("Conservative/Liberal Democrats Coalition  LogE(Probability) = " + libDemConLogTotal);
-                Console.WriteLine("\nNB: The unknown document is classified to the most posative LogE(Probability) category.");
-                Console.WriteLine("\nPress any KEY to continue.");
+                    Console.Clear();
+                    Console.WriteLine(FileDirectory + " Doesn't exist!");
+                    Console.WriteLine("Please enter the name of a valid .txt file.");
+                    Console.WriteLine("Press any key to restart.");
+                    Console.WriteLine("Or Press ESC to exit.");
 
-                Console.ReadKey();
+                    if (Console.ReadKey().Key == ConsoleKey.Escape)
+                    {
+                        Environment.Exit(0);
+                    }
+                }
             }
-            else
+            catch(Exception e)
             {
-                Console.Clear();
-                Console.WriteLine(FileDirectory + " Doesn't exist!");
-                Console.WriteLine("Please enter the name of a valid .txt file.");
-                Console.WriteLine("Press any key to restart.");
-                Console.WriteLine("Or Press ESC to exit.");
-
-                if (Console.ReadKey().Key == ConsoleKey.Escape)
-                {
-                    Environment.Exit(0);
-                }
-            }     
+                ExeptionMethod(e);
+            }
         }
-
     }
 }
