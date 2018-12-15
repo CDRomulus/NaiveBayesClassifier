@@ -1,0 +1,11 @@
+#Testing
+#Folders
+.vs
+*.user
+
+
+#Files
+Core/obj/
+Core/bin/Release/
+Core/bin/Debug/
+Core/.vs/
