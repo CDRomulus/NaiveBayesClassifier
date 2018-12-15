@@ -8,12 +8,12 @@ namespace BayesianNetwork
     static internal class Program
     {
         //file location constants
-        private const string stopWordDoc = "library\\stopwords.txt";
-        private const string lemmatizationDoc = "library\\lemmatization.txt";
-        private const string conservativeMaster = "master\\ConservativesMaster.txt";
-        private const string LaborMaster = "master\\LaborMaster.txt";
-        private const string LibDemConMaster = "master\\LibDemConMaster.txt";
-        private const string Master = "master\\Master.txt";
+        private const string stopWordDoc = "library//stopwords.txt";
+        private const string lemmatizationDoc = "library//lemmatization.txt";
+        private const string conservativeMaster = "master//ConservativesMaster.txt";
+        private const string LaborMaster = "master//LaborMaster.txt";
+        private const string LibDemConMaster = "master//LibDemConMaster.txt";
+        private const string Master = "master//Master.txt";
 
         //While loop and handles main menu input
         static void Main()

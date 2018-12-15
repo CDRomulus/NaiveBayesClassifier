@@ -162,13 +162,13 @@ namespace BayesianNetwork
         public Training()
         {
             DirectoryInfo parentDirectory = Directory.GetParent(Directory.GetCurrentDirectory());
-            srcDirectory = parentDirectory + "\\" + "res" + "\\";
+            srcDirectory = parentDirectory + "//" + "res" + "//";
         }
         //Use for resetting data to the default set
         public Training(string filename, string stopWordDoc, string lemmatizationDoc)
         {
             DirectoryInfo parentDirectory = Directory.GetParent(Directory.GetCurrentDirectory());
-            srcDirectory = parentDirectory + "\\" + "res" + "\\";
+            srcDirectory = parentDirectory + "//" + "res" + "//";
             string FileDirectory = srcDirectory + filename + ".txt";
 
             ParseTextDocument(FileDirectory, stopWordDoc, lemmatizationDoc);
@@ -183,7 +183,7 @@ namespace BayesianNetwork
 
 
             DirectoryInfo parentDirectory = Directory.GetParent(Directory.GetCurrentDirectory());
-            srcDirectory = parentDirectory + "\\" + "res" + "\\";
+            srcDirectory = parentDirectory + "//" + "res" + "//";
             string FileDirectory = srcDirectory + Console.ReadLine() + ".txt"; ;
 
 

@@ -121,7 +121,7 @@ namespace BayesianNetwork
         public Classification(string conservativeDoc, string laborDoc, string libDemConDoc,string master,string stopWordDoc,string lemmatizationDoc)
         {                                
             DirectoryInfo parentDirectory = Directory.GetParent(Directory.GetCurrentDirectory());
-            srcDirectory = parentDirectory + "\\" + "res" + "\\";
+            srcDirectory = parentDirectory + "//" + "res" + "//";
             Console.WriteLine("Please enter the name of the .txt document you wish to predict.");
             Console.WriteLine("Name of included test documents: 'test1', 'test2', 'test3'");
             string FileDirectory = srcDirectory + Console.ReadLine() + ".txt";
