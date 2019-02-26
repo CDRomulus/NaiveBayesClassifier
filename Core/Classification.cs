@@ -66,12 +66,12 @@ namespace BayesianNetwork
        
         //Tables of each category
         private readonly CategoryTable tableConservative;
-        private readonly CategoryTable tableLabor;
+        private readonly CategoryTable tableLabour;
         private readonly CategoryTable tableLibDem;
 
         //List of word probabilities of unknown document for each category
         private readonly List<double> PCatConDoc = new List<double>();
-        private readonly List<double> PCatLaborDoc = new List<double>();
+        private readonly List<double> PCatLabourDoc = new List<double>();
         private readonly List<double> PCatConservativeConseravtiveCoalitionDoc = new List<double>();
 
 
@@ -79,9 +79,9 @@ namespace BayesianNetwork
         //Removing of unwanthed characters
 
         //Calculating final probability document belonging to category
-#pragma warning disable RECS0082 // Parameter has the same name as a member and hides it
+
         private double CalculatePCatDoc(CategoryTable tableConservative, double totalUniqueWords, double PCatParty, List<double> PCatPartyDoc)
-#pragma warning restore RECS0082 // Parameter has the same name as a member and hides it
+
         {
             double CatLogTotal=0;
             for (int i = 0; i < fileContents.Count; i++)
@@ -108,7 +108,7 @@ namespace BayesianNetwork
         //Removing stopwords and combining lemmatizations
         
         //Public Methods
-        public Classification(string conservativeDoc, string laborDoc, string libDemConDoc,string master,string stopWordDoc,string lemmatizationDoc)
+        public Classification(string conservativeDoc, string LabourDoc, string libDemConDoc,string master,string stopWordDoc,string lemmatizationDoc)
         {
             try
             {
@@ -134,7 +134,7 @@ namespace BayesianNetwork
                         {
                             totalConservative = double.Parse(tempMaster[i + 1]);
                         }
-                        if (tempMaster[i] == "Labor")
+                        if (tempMaster[i] == "Labour")
                         {
                             totalLabour = double.Parse(tempMaster[i + 1]);
                         }
@@ -157,27 +157,27 @@ namespace BayesianNetwork
                     }
                     double PCatConservative = Math.Log((totalConservative / (totalConservative + totalLabour + totalLibDemCon)));
 
-                    double PCatLabor = Math.Log((totalLabour / (totalConservative + totalLabour + totalLibDemCon)));
+                    double PCatLabour = Math.Log((totalLabour / (totalConservative + totalLabour + totalLibDemCon)));
 
                     double PCatConservativeLibDemCoalition = Math.Log((totalLibDemCon / (totalConservative + totalLabour + totalLibDemCon)));
 
                     tableConservative = new CategoryTable(srcDirectory + conservativeDoc, totalUniqueWords);
-                    tableLabor = new CategoryTable(srcDirectory + laborDoc, totalUniqueWords);
+                    tableLabour = new CategoryTable(srcDirectory + LabourDoc, totalUniqueWords);
                     tableLibDem = new CategoryTable(srcDirectory + libDemConDoc, totalUniqueWords);
 
                     double consLogTotal = CalculatePCatDoc(tableConservative, totalUniqueWords, PCatConservative, PCatConDoc);
-                    double laborLogTotal = CalculatePCatDoc(tableLabor, totalUniqueWords, PCatLabor, PCatLaborDoc);
+                    double LabourLogTotal = CalculatePCatDoc(tableLabour, totalUniqueWords, PCatLabour, PCatLabourDoc);
                     double libDemConLogTotal = CalculatePCatDoc(tableLibDem, totalUniqueWords, PCatConservativeLibDemCoalition, PCatConservativeConseravtiveCoalitionDoc);
 
-                    if (consLogTotal > laborLogTotal && consLogTotal > libDemConLogTotal)
+                    if (consLogTotal > LabourLogTotal && consLogTotal > libDemConLogTotal)
                     {
                         Console.WriteLine("\nMost Likely: Conservative");
                     }
-                    else if (laborLogTotal > consLogTotal && laborLogTotal > libDemConLogTotal)
+                    else if (LabourLogTotal > consLogTotal && LabourLogTotal > libDemConLogTotal)
                     {
-                        Console.WriteLine("\nMost Likely: Labor");
+                        Console.WriteLine("\nMost Likely: Labour");
                     }
-                    else if (libDemConLogTotal > consLogTotal && libDemConLogTotal > laborLogTotal)
+                    else if (libDemConLogTotal > consLogTotal && libDemConLogTotal > LabourLogTotal)
                     {
                         Console.WriteLine("\nMost Likely: Liberal Democrats / Conservative Coalition");
                     }
@@ -186,10 +186,10 @@ namespace BayesianNetwork
                         Console.WriteLine("\nCannot Determine Party!");
                     }
 
-                    Console.WriteLine("\nConservative                              LogE(Probability) = " + consLogTotal);
-                    Console.WriteLine("Labor                                     LogE(Probability) = " + laborLogTotal);
-                    Console.WriteLine("Conservative/Liberal Democrats Coalition  LogE(Probability) = " + libDemConLogTotal);
-                    Console.WriteLine("\nNB: The unknown document is classified to the most posative LogE(Probability) category.");
+                    Console.WriteLine("\nConservative                             : LogE(Probability) = " + consLogTotal);
+                    Console.WriteLine("Labour                                   : LogE(Probability) = " + LabourLogTotal);
+                    Console.WriteLine("Conservative/Liberal Democrats Coalition : LogE(Probability) = " + libDemConLogTotal);
+                    Console.WriteLine("\nNB: The unknown document is predicted by the most positive LogE(Probability).");
                     Console.WriteLine("\nPress any KEY to continue.");
 
                     Console.ReadKey();

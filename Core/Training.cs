@@ -309,7 +309,7 @@ namespace BayesianNetwork
                 StreamWriter sw = new StreamWriter(srcDirectory + m);
 
                 sw.WriteLine("Conservative 0");
-                sw.WriteLine("Labor 0");
+                sw.WriteLine("Labour 0");
                 sw.WriteLine("LibDemCon 0");
                 sw.WriteLine("Count 0");
                 sw.Close();
@@ -320,7 +320,7 @@ namespace BayesianNetwork
             }
         }
         //Adding dictionary to a selected category master document
-        public void SetMaster(int type, string master, string conservativeMaster, string laborMaster, string libDemConMaster)
+        public void SetMaster(int type, string master, string conservativeMaster, string LabourMaster, string libDemConMaster)
         {
             string line;
             string[] lineArray;
@@ -343,7 +343,7 @@ namespace BayesianNetwork
                     StreamWriter sw = new StreamWriter(srcDirectory + master);
 
                     StreamReader conservativeDoc = new StreamReader(srcDirectory + conservativeMaster);
-                    StreamReader laborDoc = new StreamReader(srcDirectory + laborMaster);
+                    StreamReader LabourDoc = new StreamReader(srcDirectory + LabourMaster);
                     StreamReader LibDemConCoalitionDoc = new StreamReader(srcDirectory + libDemConMaster);
 
                     while ((line = conservativeDoc.ReadLine()) != null)
@@ -352,7 +352,7 @@ namespace BayesianNetwork
                         allUniqueWords.Add(lineArray[0]);
 
                     }
-                    while ((line = laborDoc.ReadLine()) != null)
+                    while ((line = LabourDoc.ReadLine()) != null)
                     {
                         lineArray = line.Split(' ');
                         allUniqueWords.Add(lineArray[0]);
@@ -366,7 +366,7 @@ namespace BayesianNetwork
                     }
                     allUniqueWords = allUniqueWords.Distinct().ToList();
                     conservativeDoc.Close();
-                    laborDoc.Close();
+                    LabourDoc.Close();
                     LibDemConCoalitionDoc.Close();
 
                     switch (type)
@@ -401,7 +401,7 @@ namespace BayesianNetwork
                         case 1:
                             for (int i = 0; i < lineList.Count; i++)
                             {
-                                if (lineList[i] == "Labor")
+                                if (lineList[i] == "Labour")
                                 {
                                     lineList[i + 1] = (Int32.Parse(lineList[i + 1]) + 1).ToString();
                                     break;

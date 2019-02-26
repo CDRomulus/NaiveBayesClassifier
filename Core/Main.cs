@@ -9,7 +9,7 @@ namespace BayesianNetwork
         private const string stopWordDoc = "library//stopwords.txt";
         private const string lemmatizationDoc = "library//lemmatization.txt";
         private const string conservativeMaster = "master//ConservativesMaster.txt";
-        private const string LaborMaster = "master//LaborMaster.txt";
+        private const string LabourMaster = "master//LabourMaster.txt";
         private const string LibDemConMaster = "master//LibDemConMaster.txt";
         private const string Master = "master//Master.txt";
 
@@ -35,25 +35,25 @@ namespace BayesianNetwork
                             do
                             {
                                 Console.WriteLine("\nSelect which party was in power for the speech.");
-                                Console.WriteLine("C = Conservatives\nL = Labor\nD = Liberal Democrats / Conservative Coalition");
+                                Console.WriteLine("C = Conservatives\nL = Labour\nD = Liberal Democrats / Conservative Coalition");
                                 Console.WriteLine("\nOr press Esc to exit.");
                                 var input = Console.ReadKey();
                                 switch (input.Key)
                                 {
                                     case ConsoleKey.C:
                                         trainObj.ObtainTeachingData(conservativeMaster);
-                                        trainObj.SetMaster(0, Master,conservativeMaster, LaborMaster, LibDemConMaster);
+                                        trainObj.SetMaster(0, Master,conservativeMaster, LabourMaster, LibDemConMaster);
                                         done = true;
                                         break;
                                     case ConsoleKey.L:
-                                        trainObj.ObtainTeachingData(LaborMaster);
-                                        trainObj.SetMaster(1, Master, conservativeMaster, LaborMaster, LibDemConMaster);
+                                        trainObj.ObtainTeachingData(LabourMaster);
+                                        trainObj.SetMaster(1, Master, conservativeMaster, LabourMaster, LibDemConMaster);
                                         done = true;
                                         break;
 
                                     case ConsoleKey.D:
                                         trainObj.ObtainTeachingData(LibDemConMaster);
-                                        trainObj.SetMaster(2, Master, conservativeMaster, LaborMaster, LibDemConMaster);
+                                        trainObj.SetMaster(2, Master, conservativeMaster, LabourMaster, LibDemConMaster);
                                         done = true;
                                         break;
                                     case ConsoleKey.Escape:
@@ -69,41 +69,41 @@ namespace BayesianNetwork
                         }
                         break;
                     case 2:
-                        Classification class1 = new Classification(conservativeMaster,LaborMaster,LibDemConMaster,Master,stopWordDoc,lemmatizationDoc);
+                        Classification class1 = new Classification(conservativeMaster,LabourMaster,LibDemConMaster,Master,stopWordDoc,lemmatizationDoc);
 
                         Console.Clear();
                         
                         break;
                     case 3:
                         Training eraseTraining = new Training();
-                        eraseTraining.Reset(conservativeMaster,LaborMaster,LibDemConMaster,Master);
+                        eraseTraining.Reset(conservativeMaster,LabourMaster,LibDemConMaster,Master);
                         Console.WriteLine("Data erased!\nPress any key to continue.");
                         Console.ReadKey();
                         break;
                     case 4:
 
                         Training resetTraining = new Training();
-                        resetTraining.Reset(conservativeMaster, LaborMaster, LibDemConMaster, Master);
+                        resetTraining.Reset(conservativeMaster, LabourMaster, LibDemConMaster, Master);
 
                         resetTraining = new Training("originalTeachingData/Coalition9thMay2012",  stopWordDoc,  lemmatizationDoc);
                         resetTraining.ObtainTeachingData(LibDemConMaster);
-                        resetTraining.SetMaster(2, Master, conservativeMaster, LaborMaster, LibDemConMaster);
+                        resetTraining.SetMaster(2, Master, conservativeMaster, LabourMaster, LibDemConMaster);
 
                         resetTraining = new Training("originalTeachingData/Conservative16thNov1994", stopWordDoc, lemmatizationDoc);
                         resetTraining.ObtainTeachingData(conservativeMaster);
-                        resetTraining.SetMaster(0, Master, conservativeMaster, LaborMaster, LibDemConMaster);
+                        resetTraining.SetMaster(0, Master, conservativeMaster, LabourMaster, LibDemConMaster);
 
                         resetTraining = new Training("originalTeachingData/Conservative27thMay2015", stopWordDoc, lemmatizationDoc);
                         resetTraining.ObtainTeachingData(conservativeMaster);
-                        resetTraining.SetMaster(0, Master, conservativeMaster, LaborMaster, LibDemConMaster);
+                        resetTraining.SetMaster(0, Master, conservativeMaster, LabourMaster, LibDemConMaster);
 
                         resetTraining = new Training("originalTeachingData/Labour6thNov2007", stopWordDoc, lemmatizationDoc);
-                        resetTraining.ObtainTeachingData(LaborMaster);
-                        resetTraining.SetMaster(1, Master, conservativeMaster, LaborMaster, LibDemConMaster);
+                        resetTraining.ObtainTeachingData(LabourMaster);
+                        resetTraining.SetMaster(1, Master, conservativeMaster, LabourMaster, LibDemConMaster);
 
                         resetTraining = new Training("originalTeachingData/Labour26thNov2003", stopWordDoc, lemmatizationDoc);
-                        resetTraining.ObtainTeachingData(LaborMaster);
-                        resetTraining.SetMaster(1, Master, conservativeMaster, LaborMaster, LibDemConMaster);
+                        resetTraining.ObtainTeachingData(LabourMaster);
+                        resetTraining.SetMaster(1, Master, conservativeMaster, LabourMaster, LibDemConMaster);
 
                         Console.WriteLine("Press any KEY to continue.");
 
@@ -116,12 +116,12 @@ namespace BayesianNetwork
         static int WelcomeMessage()
         {
             Console.Clear();
-            Console.WriteLine("Welcome to a Text Classification Program Using Naive Bayes.\n\nThis program predicts political party currently in power from Queen's speeches acquired from the State Openings of Parliament.");
+            Console.WriteLine("Welcome to a Text Classification Application Using Naive Bayes formula.\n\nThe application predicts political party currently in power from Queen's speeches acquired from the State Openings of Parliament.");
             
-            Console.WriteLine("\nWithin the '/res' file, there are all the Queen's speeches from 1996 that you can use to teach the network or to test classification.");
+            Console.WriteLine("\nWithin the '/res' file, there are all the Queen's speeches from 1996 to 2017 that you can use for teaching and classifying purposes.");
             Console.WriteLine("\nIf this is first time run, please teach the netowrk by (R)eset or (T)eaching.");
-            Console.WriteLine("\nSelect the following command.");
-            Console.WriteLine("\nPress T to select and set TRAINING data.\nPress C for CLASSIFICATION.\nPress E to ERASE learned data.\nPress R to RESET (Using the TRAINING data provided by assesment)\n\nOr press Esc to exit.");
+            Console.WriteLine("\nPlease select a following command.");
+            Console.WriteLine("\nPress T for TRAINING\nPress C for CLASSIFICATION\nPress E to  ERASE network data\nPress R to  RESET network data (Teach the network with 3 documents specified by the assessment located in the '/originalTeachingData')\n\nOr press Esc to exit.");
             var input = Console.ReadKey();
             Console.Clear();
             switch (input.Key) //Switch on Key enum
